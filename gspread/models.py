@@ -38,7 +38,6 @@ try:
 except NameError:
     basestring = unicode = str
 
-
 class Spreadsheet(object):
     """The class that represents a spreadsheet."""
     def __init__(self, client, properties):
@@ -302,7 +301,7 @@ class Spreadsheet(object):
             self.client.remove_permission(self.id, permission_id)
 
         return filtered_id_list
-
+    
 
 class Worksheet(object):
     """The class that represents a single sheet in a spreadsheet
@@ -465,15 +464,23 @@ class Worksheet(object):
             for j, value in enumerate(row)
         ]
 
-    def get_all_values(self):
+    def get_all_values(self, value_render_option='FORMATTED_VALUE'):
         """Returns a list of lists containing all cells' values as strings.
 
-        .. note::
+        :param value_render_option: (optional) Determines how values should be
+                                    rendered in the the output. See
+                                    `ValueRenderOption`_ in the Sheets API.
+        :type value_render_option: str
 
+        .. note::
+        
             Empty trailing rows and columns will not be included.
         """
 
-        data = self.spreadsheet.values_get(self.title)
+        data = self.spreadsheet.values_get(
+            self.title, 
+            params={'valueRenderOption': value_render_option}
+        )
 
         try:
             return fill_gaps(data['values'])
